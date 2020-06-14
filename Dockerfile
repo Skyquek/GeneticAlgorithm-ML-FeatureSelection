@@ -1,18 +1,14 @@
 FROM frolvlad/alpine-python-machinelearning:latest
 RUN pip install --upgrade pip
 
-# Initialized working directory
-WORKDIR /app
-
 # copy our code to the docker
-COPY . /app
+COPY machine-learning-api/ /application
+WORKDIR /application
 
 RUN pip install -r requirements.txt
 
-EXPOSE 4000
+EXPOSE 5000
 
-ENTRYPOINT ['python']
-
-CMD ['app.py']
+CMD ["python","app.py"]
 
 
