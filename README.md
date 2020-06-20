@@ -27,4 +27,6 @@ Step 2: linker -> Input -> Additional Dependencies
 Normaliz.lib;Ws2_32.lib;Wldap32.lib;Crypt32.lib;advapi32.lib;C:\Users\user\Documents\UTeM Year 2 Sem 2\BITI3143 - Evolutionary Computing\Mini_Project\curl-7.70.0\x64 Debug\lib\libcurl_a_debug.lib
 ```
 
-# Project Idea and Methodology
+# Hyperparameter Tuning
++ change the Number of GENE
++ Change the CURL_POST_FIELD_SIZE 

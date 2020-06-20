@@ -15,17 +15,17 @@ app = Flask(__name__)
 
 encoder = preprocessing.LabelEncoder()
 
-GENE = 200
+GENE = 280
 
 
 def data_preprocessing(trainData, testData, chromosome_feature):
     # Seperating Predictors and Outcome values from train and test sets
     X_train = pd.DataFrame(trainData.drop(['Activity', 'subject'], axis=1))
-    X_train = X_train.iloc[:, 0:200]
+    X_train = X_train.iloc[:, 0:GENE]
     Y_train_label = trainData.Activity.values.astype(object)
 
     X_test = pd.DataFrame(testData.drop(['Activity', 'subject'], axis=1))
-    X_test = X_test.iloc[:, 0: 200]
+    X_test = X_test.iloc[:, 0: GENE]
     Y_test_label = testData.Activity.values.astype(object)
 
     print("Before X_train shape: {}, X_test shape: {}".format(X_train.shape, X_test.shape))
@@ -120,7 +120,7 @@ def home():
             trainData, testData, chromosome_list)
 
         try:
-            svm_model = SVC(kernel='rbf')
+            svm_model = SVC(kernel='linear')
             svm_model.fit(X_train_scaled, Y_train)
             Y_pred = svm_model.predict(X_test_scaled)
             Y_pred_label = list(encoder.inverse_transform(Y_pred))
@@ -135,6 +135,13 @@ def home():
 
             f1_mean = np.mean(np.array(f1_list))
 
+            # [(f1-mean/n.of.attributes) * 100] * 2
+
+            if attribute_counter > 2:
+                fitness = ((f1_mean/attribute_counter) * 100) * 2
+            else:
+                fitness = 0
+
             # result = {
             #     "fitness": f1_mean,
             #     "column_name": columns_name,
@@ -144,7 +151,7 @@ def home():
             #
             # return jsonify(result)
 
-            return str(f1_mean)
+            return str(fitness)
         except:
             return str(0)
     else:
