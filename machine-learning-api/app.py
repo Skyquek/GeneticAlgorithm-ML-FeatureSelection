@@ -14,8 +14,7 @@ from sklearn.model_selection import cross_val_score, GridSearchCV
 app = Flask(__name__)
 
 encoder = preprocessing.LabelEncoder()
-
-GENE = 280
+GENE = 100
 
 
 def data_preprocessing(trainData, testData, chromosome_feature):
@@ -109,12 +108,14 @@ def home():
 
                 chromosome_list.append(int(chromosome[alelle]))
 
+        # chromosome_list = [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+
         # If list all have less than 2 attributes
         if attribute_counter < 2:
-            return str(0)
+            return str(1)
 
-        trainData = shuffle(pd.read_csv('static/datasets/train.csv'))
-        testData = shuffle(pd.read_csv('static/datasets/test.csv'))
+        trainData = pd.read_csv('static/datasets/train.csv')
+        testData = pd.read_csv('static/datasets/test.csv')
 
         X_train_scaled, Y_train, X_test_scaled, Y_test, Y_test_label, columns_name, total_non_activated, total_activated = data_preprocessing(
             trainData, testData, chromosome_list)
@@ -137,23 +138,33 @@ def home():
 
             # [(f1-mean/n.of.attributes) * 100] * 2
 
-            if attribute_counter > 2:
-                fitness = ((f1_mean/attribute_counter) * 100) * 2
-            else:
-                fitness = 0
+            f1_weight = 0.6
+            attributes_weight = 0.4
 
+            # Constraint Handling and Fitness Function 
+            if attribute_counter >= 2:
+                # fitness = ((attributes_weight * attribute_counter) / (f1_weight * f1_mean))
+                fitness = ((attribute_counter/ GENE) * attributes_weight) + (1-(f1_mean * f1_weight))
+                # fitness = 1/f1_mean
+            else:
+                fitness = 1
+
+            # print("f1-mean: {}, number of attributes: {}, fitness: {}".format(f1_mean, attribute_counter, fitness))
+            #
             # result = {
             #     "fitness": f1_mean,
             #     "column_name": columns_name,
             #     "total_0": total_non_activated,
             #     "total_1": total_activated
             # }
-            #
+
             # return jsonify(result)
+
+            print("Fitness: {}".format(fitness))
 
             return str(fitness)
         except:
-            return str(0)
+            return str(1)
     else:
         return "Hello Get"
 
